@@ -772,14 +772,6 @@ VOID SysInfoUpdateSmbiosType1(CHAR8 *serialNo, EFIChipInfoSerialNumType serial)
   mSysInfoType1Strings[2] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailModel);
   mSysInfoType1Strings[4] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailSku);
 
-//
-// PcdSmbiosSystemBrand modification Start
-//
-  mSysInfoType1Strings[0] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemBrand);
-//
-// PcdSmbiosSystemBrand modification End
-//
-
   // Update serial number from Board DXE
   mSysInfoType1Strings[3] = serialNo;
 //  GetUUIDFromEFIChipInfoSerialNumType(
