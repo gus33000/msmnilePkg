@@ -13,7 +13,7 @@ gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdSmbiosSystemRetailSku|"DVT"
 # gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdDisplayCallerStallBeforeEnable|2000000
 
 # Scheduler Protocol Address
-gSurfaceDuoFamilyPkgTokenSpaceGuid.KernelProtocolAddress|0x9FC37990
+gSurfaceDuoFamilyPkgTokenSpaceGuid.KernelProtocolAddress|0x9FC37980
 
 [PcdsDynamicDefault.common]
 gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|1080
