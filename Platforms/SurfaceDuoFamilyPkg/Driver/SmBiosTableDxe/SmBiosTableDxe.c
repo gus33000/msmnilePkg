@@ -62,9 +62,6 @@ be found at http://opensource.org/licenses/bsd-license.php
 /* Used to read Ram Info */
 #include <Protocol/EFIRamPartition.h>
 
-/* Used to read device serial number */
-#include <Protocol/SurfaceFirmwareProvisioningDataProtocol.h>
-
 /* Used to read UEFI release information */
 #include <Library/MuUefiVersionLib.h>
 
@@ -639,7 +636,6 @@ GetUUIDFromEFIChipInfoSerialNumType(
   return Status;
 }
 
-
 /**
 
   Create SMBIOS record.
@@ -772,19 +768,10 @@ VOID SysInfoUpdateSmbiosType1(CHAR8 *serialNo, EFIChipInfoSerialNumType serial)
   mSysInfoType1Strings[2] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailModel);
   mSysInfoType1Strings[4] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailSku);
 
-//
-// PcdSmbiosSystemBrand modification Start
-//
-  mSysInfoType1Strings[0] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemBrand);
-//
-// PcdSmbiosSystemBrand modification End
-//
-
   // Update serial number from Board DXE
   mSysInfoType1Strings[3] = serialNo;
-//  GetUUIDFromEFIChipInfoSerialNumType(
-//      serial, &mSysInfoType1.Uuid, sizeof(GUID));
-  mSysInfoType1.Uuid.Data1 = serial;
+  GetUUIDFromEFIChipInfoSerialNumType(
+      serial, &mSysInfoType1.Uuid, sizeof(GUID));
 
   LogSmbiosData(
       (EFI_SMBIOS_TABLE_HEADER *)&mSysInfoType1, mSysInfoType1Strings, NULL);
@@ -863,30 +850,12 @@ VOID CacheInfoUpdateSmbiosType7(VOID)
 /***********************************************************************
         SMBIOS data update  TYPE16  Physical Memory Array Information
 ************************************************************************/
-
-//
-// Dynamic Ram Detect Patch End
-//
-
-// Original Code
-//VOID PhyMemArrayInfoUpdateSmbiosType16(VOID)
-//{
-//  EFI_SMBIOS_HANDLE MemArraySmbiosHande;
-//
-//  LogSmbiosData(
-//      (EFI_SMBIOS_TABLE_HEADER *)&mPhyMemArrayInfoType16,
-//      mPhyMemArrayInfoType16Strings, &MemArraySmbiosHande);
-//
-//  //
-//  // Update the memory device information
-//  //
-//  mMemDevInfoType17.MemoryArrayHandle = MemArraySmbiosHande;
-//}
-
 VOID PhyMemArrayInfoUpdateSmbiosType16(IN UINT64 SystemMemorySize)
 {
   EFI_SMBIOS_HANDLE MemArraySmbiosHande;
+
   mPhyMemArrayInfoType16.ExtendedMaximumCapacity = SystemMemorySize;
+
   LogSmbiosData(
       (EFI_SMBIOS_TABLE_HEADER *)&mPhyMemArrayInfoType16,
       mPhyMemArrayInfoType16Strings, &MemArraySmbiosHande);
@@ -897,28 +866,9 @@ VOID PhyMemArrayInfoUpdateSmbiosType16(IN UINT64 SystemMemorySize)
   mMemDevInfoType17.MemoryArrayHandle = MemArraySmbiosHande;
 }
 
-//
-// Dynamic Ram Detect Patch End
-//
-
 /***********************************************************************
         SMBIOS data update  TYPE17  Memory Device Information
 ************************************************************************/
-
-//
-// Dynamic Ram Detect Patch Start
-//
-
-// Original Code:
-//VOID MemDevInfoUpdateSmbiosType17(VOID)
-//{
-//  mMemDevInfoType17.Size = FixedPcdGet64(PcdSystemMemorySize) / 0x100000;
-//
-//  LogSmbiosData(
-//      (EFI_SMBIOS_TABLE_HEADER *)&mMemDevInfoType17, mMemDevInfoType17Strings,
-//      NULL);
-//}
-
 VOID MemDevInfoUpdateSmbiosType17(IN UINT64 SystemMemorySize)
 {
   mMemDevInfoType17.Size = SystemMemorySize / 0x100000;
@@ -928,33 +878,9 @@ VOID MemDevInfoUpdateSmbiosType17(IN UINT64 SystemMemorySize)
       NULL);
 }
 
-//
-// Dynamic Ram Detect Patch End
-//
-
 /***********************************************************************
         SMBIOS data update  TYPE19  Memory Array Map Information
 ************************************************************************/
-
-//
-// Dynamic Ram Detect Patch Start
-//
-
-// Original Code:
-//VOID MemArrMapInfoUpdateSmbiosType19(VOID)
-//{
-//  mMemArrMapInfoType19.StartingAddress =
-//      FixedPcdGet64(PcdSystemMemoryBase) / 1024;
-//  mMemArrMapInfoType19.EndingAddress =
-//      (FixedPcdGet64(PcdSystemMemorySize) + FixedPcdGet64(PcdSystemMemoryBase) -
-//       1) /
-//      1024;
-//
-//  LogSmbiosData(
-//      (EFI_SMBIOS_TABLE_HEADER *)&mMemArrMapInfoType19,
-//      mMemArrMapInfoType19Strings, NULL);
-//}
-
 VOID MemArrMapInfoUpdateSmbiosType19(IN UINT64 SystemMemorySize)
 {
   mMemArrMapInfoType19.StartingAddress =
@@ -969,10 +895,6 @@ VOID MemArrMapInfoUpdateSmbiosType19(IN UINT64 SystemMemorySize)
       mMemArrMapInfoType19Strings, NULL);
 }
 
-//
-// Dynamic Ram Detect Patch End
-//
-
 /***********************************************************************
         Driver Entry
 ************************************************************************/
@@ -983,10 +905,9 @@ SmBiosTableDxeInitialize(
 {
   EFI_STATUS               Status;
   CHAR8                    serialNo[EFICHIPINFO_MAX_ID_LENGTH];
-//  UINTN                    serialNoLength = EFICHIPINFO_MAX_ID_LENGTH;
+  UINTN                    serialNoLength = EFICHIPINFO_MAX_ID_LENGTH;
   EFIChipInfoSerialNumType serial;
   EFI_CHIPINFO_PROTOCOL   *mBoardProtocol  = NULL;
-//  SFPD_PROTOCOL           *mDeviceProtocol = NULL;
 
   // Locate Qualcomm Board Protocol
   Status = gBS->LocateProtocol(
@@ -994,14 +915,18 @@ SmBiosTableDxeInitialize(
 
   if (mBoardProtocol != NULL) {
     mBoardProtocol->GetSerialNumber(mBoardProtocol, &serial);
-    AsciiSPrint(serialNo, sizeof(serialNo), "%lld", serial);
+    ZeroMem(serialNo, serialNoLength);
+    AsciiSPrint(serialNo, serialNoLength, "%lld", serial);
   }
 
-//
-// Dynamic Ram Detect Patch Start
-//
 
-  // Vars
+  BIOSInfoUpdateSmbiosType0();
+  SysInfoUpdateSmbiosType1(serialNo, serial);
+  BoardInfoUpdateSmbiosType2(serialNo);
+  EnclosureInfoUpdateSmbiosType3(serialNo);
+  ProcessorInfoUpdateSmbiosType4(PcdGet32(PcdCoreCount));
+  CacheInfoUpdateSmbiosType7();
+
   EFI_RAMPARTITION_PROTOCOL *mRamPartitionProtocol = NULL;
   RamPartitionEntry         *RamPartitions = NULL;
   UINT32                     NumPartitions = 0;
@@ -1010,15 +935,6 @@ SmBiosTableDxeInitialize(
   // Locate Qualcomm RamPartition Protocol (Needs EnvDxe !)
   Status = gBS->LocateProtocol(
       &gEfiRamPartitionProtocolGuid, NULL, (VOID *)&mRamPartitionProtocol);
-
-  // Locate Sfpd Protocol
-//  Status =
-//      gBS->LocateProtocol(&gSfpdProtocolGuid, NULL, (VOID *)&mDeviceProtocol);
-
-//  if (mDeviceProtocol != NULL) {
-//    ZeroMem(serialNo, serialNoLength);
-//    mDeviceProtocol->GetSurfaceSerialNumber(&serialNoLength, serialNo);
-//  }
 
   // Get the SystemMemorySize
   if (mRamPartitionProtocol != NULL) {
@@ -1054,26 +970,9 @@ SmBiosTableDxeInitialize(
     SystemMemorySize = FixedPcdGet64(PcdSystemMemoryBase);
   }
 
-  // Original Code:
-  //  PhyMemArrayInfoUpdateSmbiosType16();
-  //  MemDevInfoUpdateSmbiosType17();
-  //  MemArrMapInfoUpdateSmbiosType19();
-
-  // Pass Size to functions
   PhyMemArrayInfoUpdateSmbiosType16(SystemMemorySize);
   MemDevInfoUpdateSmbiosType17(SystemMemorySize);
   MemArrMapInfoUpdateSmbiosType19(SystemMemorySize);
-
-//
-// Dynamic Ram Detect Patch End
-//
-
-  BIOSInfoUpdateSmbiosType0();
-  SysInfoUpdateSmbiosType1(serialNo, serial);
-  BoardInfoUpdateSmbiosType2(serialNo);
-  EnclosureInfoUpdateSmbiosType3(serialNo);
-  ProcessorInfoUpdateSmbiosType4(PcdGet32(PcdCoreCount));
-  CacheInfoUpdateSmbiosType7();
 
   return EFI_SUCCESS;
 }

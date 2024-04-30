@@ -29,8 +29,8 @@
 
 [PcdsFixedAtBuild.common]
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"DuoWoA authors"
-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"2404.20"
-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareRevision|0x01240420
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"2404.03"
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareRevision|0x01240403
   gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemId|"QCOM  "
   gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId|0x324B44454D4F4351
   gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultCreatorId|0x4D4F4351
@@ -40,10 +40,11 @@
   gEfiMdePkgTokenSpaceGuid.PcdMaximumLinkedListLength|1000000
   gEfiMdePkgTokenSpaceGuid.PcdSpinLockTimeout|10000000
   gEfiMdePkgTokenSpaceGuid.PcdUefiLibMaxPrintBufferSize|320
+  gAdvLoggerPkgTokenSpaceGuid.PcdAdvancedLoggerPreMemPages|3
 
 !if $(TARGET) == DEBUG
   gEfiMdePkgTokenSpaceGuid.PcdDebugClearMemoryValue|0xAF
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x0e
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2f
   gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x800fee0f
   gEfiMdePkgTokenSpaceGuid.PcdPerformanceLibraryPropertyMask|1
   gEfiMdePkgTokenSpaceGuid.PcdPostCodePropertyMask|0
@@ -51,7 +52,7 @@
 !else
   gEfiMdePkgTokenSpaceGuid.PcdDebugClearMemoryValue|0x00
   gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x00
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000000
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x00000000
   gEfiMdePkgTokenSpaceGuid.PcdPerformanceLibraryPropertyMask|0
   gEfiMdePkgTokenSpaceGuid.PcdPostCodePropertyMask|0
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x00
@@ -114,8 +115,8 @@
   # 4042708A-0F2D-4823-AC60-0D77B3111889
   gEfiMdeModulePkgTokenSpaceGuid.PcdBootManagerMenuFile|{ 0x8A, 0x70, 0x42, 0x40, 0x2D, 0x0F, 0x23, 0x48, 0xAC, 0x60, 0x0D, 0x77, 0xB3, 0x11, 0x18, 0x89 }
 
-  gOemPkgTokenSpaceGuid.PcdUefiVersionNumber|0x1240341 # 1.24.04.20
-  gOemPkgTokenSpaceGuid.PcdUefiBuildDate|0x20240313 # 2024-04-06
+  gOemPkgTokenSpaceGuid.PcdUefiVersionNumber|0x1240403 # 1.24.04.03
+  gOemPkgTokenSpaceGuid.PcdUefiBuildDate|0x20240401 # 2024-04-01
 
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxVariableSize|0x2000
 
@@ -200,8 +201,6 @@
   RealTimeClockLib|EmbeddedPkg/Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
   TimeBaseLib|EmbeddedPkg/Library/TimeBaseLib/TimeBaseLib.inf
 
-#######################
-# Add UART section here.
 !if $(USE_SCREEN_FOR_SERIAL_OUTPUT) == 1
     !if $(USE_MEMORY_FOR_SERIAL_OUTPUT) == 1
       SerialPortLib|SurfaceDuoFamilyPkg/Library/FrameBufferInMemorySerialPortLib/FrameBufferInMemorySerialPortLib.inf
@@ -219,8 +218,6 @@
 !endif
 !endif
 !endif
-#
-########################
 
   #
   # Uncomment (and comment out the next line) For RealView Debugger. The Standard IO window
@@ -468,8 +465,6 @@
 
   ArmPkg/Drivers/TimerDxe/TimerDxe.inf
 
-  # DT
-  EmbeddedPkg/Drivers/DtPlatformDxe/DtPlatformDxe.inf
   EmbeddedPkg/Drivers/VirtualKeyboardDxe/VirtualKeyboardDxe.inf
 
   EmbeddedPkg/EmbeddedMonotonicCounter/EmbeddedMonotonicCounter.inf
@@ -636,7 +631,6 @@
   # ACPI and SMBIOS
   # We use pre-built ACPI tables, so only core components are loaded
   SurfaceDuoFamilyPkg/Driver/SmBiosTableDxe/SmBiosTableDxe.inf
-  SurfaceDuoFamilyPkg/Driver/SurfaceFirmwareProvisioningDataDxe/SurfaceFirmwareProvisioningDataDxe.inf
 
   # PrePI
   SurfaceDuoFamilyPkg/PrePi/PeiUniCore.inf

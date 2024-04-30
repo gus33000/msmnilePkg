@@ -168,9 +168,9 @@ VOID InstallPlatformHob()
     LocateMemoryMapAreaByName("Info Blk", &InfoBlk);
 
     UINTN InfoBlkAddress      = InfoBlk.Address;
+    UINTN SchedIntfAddress    = PcdGet64(KernelProtocolAddress);
     UINTN ShLibAddress        = (UINTN)&ShLib;
     UINTN FvDecompressAddress = 0x9D542000;
-    UINTN SchedIntfAddress    = PcdGet64(KernelProtocolAddress);
 
     BuildMemHobForFv(EFI_HOB_TYPE_FV2);
     BuildGuidDataHob(

@@ -64,27 +64,5 @@
 
     !include ArmPlatformPkg/SecureBootDefaultKeys.fdf.inc
   !endif
-################################################################
-# UEFI Shell Change Start
-  FILE APPLICATION=PCD(gPcBdsPkgTokenSpaceGuid.PcdShellFile) {
-    SECTION PE32=$(OUTPUT_DIRECTORY)/$(TARGET)_$(TOOL_CHAIN_TAG)/AARCH64/Shell.efi
-    SECTION UI= "EdkShell"
-  }
-# UEFI Shell Change End
-
-# CUST_LOGO Change Start.
-  !if $(CUST_LOGO) == 1
-    FILE FREEFORM = PCD(gOemPkgTokenSpaceGuid.PcdLogoFile) {
-      SECTION RAW = $(PLATFORM_NAME)Pkg/Device/$(TARGET_DEVICE)/Include/Resources/CustBootLogo.bmp
-      SECTION UI = "Logo"
-    }
-  !else
-    FILE FREEFORM = PCD(gOemPkgTokenSpaceGuid.PcdLogoFile) {
-      SECTION RAW = SurfaceDuoFamilyPkg/Include/Resources/BootLogo.bmp
-      SECTION UI = "Logo"
-    }
-  !endif
-# CUST_LOGO Change End.
-################################################################
 
   !include $(SHARED_CRYPTO_PATH)/Driver/Bin/CryptoDriver.DXE.inc.fdf
