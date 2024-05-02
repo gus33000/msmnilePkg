@@ -170,7 +170,7 @@ VOID InstallPlatformHob()
     UINTN InfoBlkAddress      = InfoBlk.Address;
     UINTN SchedIntfAddress    = PcdGet64(KernelProtocolAddress);
     UINTN ShLibAddress        = (UINTN)&ShLib;
-    UINTN FvDecompressAddress = 0x9D542000;
+    UINTN FvDecompressAddress = 0x9FC403C8;
 
     BuildMemHobForFv(EFI_HOB_TYPE_FV2);
     BuildGuidDataHob(
