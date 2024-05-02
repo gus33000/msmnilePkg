@@ -72,7 +72,7 @@
 
 [PcdsFixedAtBuild.common]
   # Platform-specific
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x200000000        # 8GB Size
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0x300000000        # 12GB Size
 
 [LibraryClasses.common]
   # Notice: PlatformMemoryMapLib was moved to Device/<device>/Library/

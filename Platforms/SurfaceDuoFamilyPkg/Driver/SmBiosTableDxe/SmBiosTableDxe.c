@@ -59,9 +59,6 @@ be found at http://opensource.org/licenses/bsd-license.php
 /* Used to read chip serial number */
 #include <Protocol/EFIChipInfo.h>
 
-/* Used to read Ram Info */
-#include <Protocol/EFIRamPartition.h>
-
 /* Used to read UEFI release information */
 #include <Library/MuUefiVersionLib.h>
 
@@ -850,11 +847,9 @@ VOID CacheInfoUpdateSmbiosType7(VOID)
 /***********************************************************************
         SMBIOS data update  TYPE16  Physical Memory Array Information
 ************************************************************************/
-VOID PhyMemArrayInfoUpdateSmbiosType16(IN UINT64 SystemMemorySize)
+VOID PhyMemArrayInfoUpdateSmbiosType16(VOID)
 {
   EFI_SMBIOS_HANDLE MemArraySmbiosHande;
-
-  mPhyMemArrayInfoType16.ExtendedMaximumCapacity = SystemMemorySize;
 
   LogSmbiosData(
       (EFI_SMBIOS_TABLE_HEADER *)&mPhyMemArrayInfoType16,
@@ -869,9 +864,9 @@ VOID PhyMemArrayInfoUpdateSmbiosType16(IN UINT64 SystemMemorySize)
 /***********************************************************************
         SMBIOS data update  TYPE17  Memory Device Information
 ************************************************************************/
-VOID MemDevInfoUpdateSmbiosType17(IN UINT64 SystemMemorySize)
+VOID MemDevInfoUpdateSmbiosType17(VOID)
 {
-  mMemDevInfoType17.Size = SystemMemorySize / 0x100000;
+  mMemDevInfoType17.Size = FixedPcdGet64(PcdSystemMemorySize) / 0x100000;
 
   LogSmbiosData(
       (EFI_SMBIOS_TABLE_HEADER *)&mMemDevInfoType17, mMemDevInfoType17Strings,
@@ -881,12 +876,12 @@ VOID MemDevInfoUpdateSmbiosType17(IN UINT64 SystemMemorySize)
 /***********************************************************************
         SMBIOS data update  TYPE19  Memory Array Map Information
 ************************************************************************/
-VOID MemArrMapInfoUpdateSmbiosType19(IN UINT64 SystemMemorySize)
+VOID MemArrMapInfoUpdateSmbiosType19(VOID)
 {
   mMemArrMapInfoType19.StartingAddress =
       FixedPcdGet64(PcdSystemMemoryBase) / 1024;
   mMemArrMapInfoType19.EndingAddress =
-      (SystemMemorySize + FixedPcdGet64(PcdSystemMemoryBase) -
+      (FixedPcdGet64(PcdSystemMemorySize) + FixedPcdGet64(PcdSystemMemoryBase) -
        1) /
       1024;
 
@@ -919,60 +914,15 @@ SmBiosTableDxeInitialize(
     AsciiSPrint(serialNo, serialNoLength, "%lld", serial);
   }
 
-
   BIOSInfoUpdateSmbiosType0();
   SysInfoUpdateSmbiosType1(serialNo, serial);
   BoardInfoUpdateSmbiosType2(serialNo);
   EnclosureInfoUpdateSmbiosType3(serialNo);
   ProcessorInfoUpdateSmbiosType4(PcdGet32(PcdCoreCount));
   CacheInfoUpdateSmbiosType7();
-
-  EFI_RAMPARTITION_PROTOCOL *mRamPartitionProtocol = NULL;
-  RamPartitionEntry         *RamPartitions = NULL;
-  UINT32                     NumPartitions = 0;
-  UINT64                     SystemMemorySize = 0;
-
-  // Locate Qualcomm RamPartition Protocol (Needs EnvDxe !)
-  Status = gBS->LocateProtocol(
-      &gEfiRamPartitionProtocolGuid, NULL, (VOID *)&mRamPartitionProtocol);
-
-  // Get the SystemMemorySize
-  if (mRamPartitionProtocol != NULL) {
-    Status = mRamPartitionProtocol->GetRamPartitions(mRamPartitionProtocol, NULL, &NumPartitions);
-    if (Status == EFI_BUFFER_TOO_SMALL) {
-      RamPartitions = AllocateZeroPool(NumPartitions * sizeof (RamPartitionEntry));
-      Status = mRamPartitionProtocol->GetRamPartitions(mRamPartitionProtocol, RamPartitions, &NumPartitions);
-      if (EFI_ERROR (Status) || (NumPartitions < 1)) {
-        DEBUG ((EFI_D_ERROR, "Failed to get RAM partitions\n"));
-        FreePool (RamPartitions);
-        RamPartitions = NULL;
-        SystemMemorySize = FixedPcdGet64(PcdSystemMemorySize);
-      }
-    }
-
-    // Update SystemMemorySize if meet no issue above,
-    //   Otherwise SystemMemorySize == FixedPcdGet64(PcdSystemMemorySize)
-    if(SystemMemorySize != FixedPcdGet64(PcdSystemMemorySize)){
-      for (UINTN i = 0; i < NumPartitions; i++)
-        SystemMemorySize += RamPartitions[i].AvailableLength;
-      DEBUG((EFI_D_WARN, "The Total SystemMemorySize is 0x%016llx \n", SystemMemorySize));
-
-      UINTN DesignMemroySize = 0;
-      while(SystemMemorySize >= DesignMemroySize)
-        DesignMemroySize += 0x40000000;
-
-      DEBUG((EFI_D_WARN, "The Totol DesignMemorySize is 0x%016llx \n", DesignMemroySize));
-      SystemMemorySize = DesignMemroySize;
-    }
-  } else{
-    // Report FixedPcdGet64(PcdSystemMemorySize) if protocol not found.
-    DEBUG((EFI_D_ERROR, "[SmBiosTableDxe] Locate Ram Partition Protocol Failed! \n"));
-    SystemMemorySize = FixedPcdGet64(PcdSystemMemoryBase);
-  }
-
-  PhyMemArrayInfoUpdateSmbiosType16(SystemMemorySize);
-  MemDevInfoUpdateSmbiosType17(SystemMemorySize);
-  MemArrMapInfoUpdateSmbiosType19(SystemMemorySize);
+  PhyMemArrayInfoUpdateSmbiosType16();
+  MemDevInfoUpdateSmbiosType17();
+  MemArrMapInfoUpdateSmbiosType19();
 
   return EFI_SUCCESS;
 }

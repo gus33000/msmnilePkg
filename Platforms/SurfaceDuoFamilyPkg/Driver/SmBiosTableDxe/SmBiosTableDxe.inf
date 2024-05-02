@@ -49,7 +49,6 @@
   gEfiChipInfoProtocolGuid
   gEfiHash2ProtocolGuid
   gEfiSmbiosProtocolGuid
-  gEfiRamPartitionProtocolGuid
   
 [Depex]
   gEfiHash2ProtocolGuid AND
