@@ -46,6 +46,12 @@ jobs:
           name: uefi-images-hana
           path: Build/SurfaceDuo1Pkg/ci_artifacts
 
+      - name: Upload Kona's Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: uefi-images-kona
+          path: Build/KonaPkg/ci_artifacts
+
       - name: Upload Kodiak's Artifact
         uses: actions/upload-artifact@v3
         with:
