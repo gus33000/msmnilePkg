@@ -21,11 +21,11 @@
 ################################################################################
 
 [FD.SM8250_EFI]
-BaseAddress   = 0x9FC00000|gArmTokenSpaceGuid.PcdFdBaseAddress #The base address of the FLASH Device.
-Size          = 0x00300000|gArmTokenSpaceGuid.PcdFdSize        #The size in bytes of the FLASH Device
+BaseAddress   = 0x9FC41000|gArmTokenSpaceGuid.PcdFdBaseAddress #The base address of the FLASH Device.
+Size          = 0x002BF000|gArmTokenSpaceGuid.PcdFdSize        #The size in bytes of the FLASH Device
 ErasePolarity = 1
 BlockSize     = 0x1000
-NumBlocks     = 0x300
+NumBlocks     = 0x2BF
 
 ################################################################################
 #
@@ -42,7 +42,7 @@ NumBlocks     = 0x300
 # RegionType <FV, DATA, or FILE>
 #
 ################################################################################
-0x00000000|0x00300000
+0x00000000|0x002BF000
 gArmTokenSpaceGuid.PcdFvBaseAddress|gArmTokenSpaceGuid.PcdFvSize
 FV = FVMAIN_COMPACT
 
@@ -78,8 +78,8 @@ READ_STATUS        = TRUE
 READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
-  !include KonaPkg/Device/$(TARGET_DEVICE)/APRIORI.inc
-  !include KonaPkg/Device/$(TARGET_DEVICE)/DXE.inc
+  !include $(PACKAGE_NAME)/Device/$(TARGET_DEVICE)/APRIORI.inc
+  !include $(PACKAGE_NAME)/Device/$(TARGET_DEVICE)/DXE.inc
 
   # Debug heartbeat
 !if $(SEND_HEARTBEAT_TO_SERIAL) == 1
@@ -93,21 +93,16 @@ READ_LOCK_STATUS   = TRUE
 
   INF SurfaceDuoFamilyPkg/Driver/SystemIntegrityPolicyProvisioningDxe/SystemIntegrityPolicyProvisioningDxe.inf
 
-  INF SurfaceDuoFamilyPkg/Driver/GpioButtons/GpioButtons.inf
   INF EmbeddedPkg/Drivers/VirtualKeyboardDxe/VirtualKeyboardDxe.inf
 
   # BDS
-  INF SurfaceDuoFamilyPkg/Driver/RamPartitionDxe/RamPartitionDxe.inf
   INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
   INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   INF MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
-  INF MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
 
   # HID Support
   INF HidPkg/HidKeyboardDxe/HidKeyboardDxe.inf
   INF HidPkg/HidMouseAbsolutePointerDxe/HidMouseAbsolutePointerDxe.inf
-  INF HidPkg/UsbKbHidDxe/UsbKbHidDxe.inf
-  INF HidPkg/UsbMouseHidDxe/UsbMouseHidDxe.inf
 
   # Disk IO
   INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
@@ -119,39 +114,36 @@ READ_LOCK_STATUS   = TRUE
   INF SurfaceDuoFamilyPkg/Driver/SmBiosTableDxe/SmBiosTableDxe.inf
 
   # ACPI Tables
-  !include KonaPkg/Include/ACPI.inc
-#  INF RuleOverride=ACPITABLE KonaPkg/AcpiTables/AcpiTables.inf
-
-  # DT
-  INF EmbeddedPkg/Drivers/DtPlatformDxe/DtPlatformDxe.inf
-  # !include KonaPkg/Include/FDT.inc
+  !include $(PACKAGE_NAME)/Include/ACPI.inc
 
   INF MdeModulePkg/Universal/EsrtFmpDxe/EsrtFmpDxe.inf
 
   !include SurfaceDuoFamilyPkg/Frontpage.fdf.inc
 
-  FILE FREEFORM = PCD(gMsCorePkgTokenSpaceGuid.PcdRegulatoryGraphicFileGuid) {
-    SECTION RAW = KonaPkg/Include/Resources/RegulatoryLogos.png
+  FILE FREEFORM = PCD(gOemPkgTokenSpaceGuid.PcdLogoFile) {
+    SECTION RAW = SurfaceDuoFamilyPkg/Include/Resources/BootLogo.bmp
+    SECTION UI = "BootLogo.bmp"
   }
 
-  INF SurfaceDuoFamilyPkg/UFP/ufpdevicefw.inf
-
-#  FILE FREEFORM = PCD(gOemPkgTokenSpaceGuid.PcdLogoFile) {
-#    SECTION RAW = SurfaceDuoFamilyPkg/Include/Resources/BootLogo.bmp
-#    SECTION UI = "BootLogo.bmp"
-#  }
+  FILE FREEFORM = PCD(gMsCorePkgTokenSpaceGuid.PcdRegulatoryGraphicFileGuid) {
+    SECTION RAW = $(PACKAGE_NAME)/Include/Resources/RegulatoryLogos.png
+  }
 
   INF AdvLoggerPkg/AdvancedFileLogger/AdvancedFileLogger.inf
+
   INF ArmPkg/Drivers/ArmGic/ArmGicDxe.inf
   INF ArmPkg/Drivers/ArmPsciMpServicesDxe/ArmPsciMpServicesDxe.inf
   INF ArmPkg/Drivers/CpuDxe/CpuDxe.inf
   INF ArmPkg/Drivers/TimerDxe/TimerDxe.inf
+
   INF EmbeddedPkg/MetronomeDxe/MetronomeDxe.inf
   INF EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
+
   INF FatPkg/EnhancedFatDxe/Fat.inf
+
   INF MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
   INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
-#  INF MdeModulePkg/Bus/Usb/UsbMouseAbsolutePointerDxe/UsbMouseAbsolutePointerDxe.inf
+  INF MdeModulePkg/Bus/Usb/UsbMouseAbsolutePointerDxe/UsbMouseAbsolutePointerDxe.inf
   INF MdeModulePkg/Core/Dxe/DxeMain.inf
   INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
   INF MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
@@ -171,14 +163,14 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf
   INF MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
   INF MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf
-#  INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+  # INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
   FILE DRIVER = CBD2E4D5-7068-4FF5-B462-9822B4AD8D60 {
     SECTION PE32 = SurfaceDuoFamilyPkg/Binaries/VariableRuntimeDxe.efi
     SECTION DXE_DEPEX_EXP = {gEfiPcdProtocolGuid AND gEfiDevicePathUtilitiesProtocolGuid}
     SECTION UI = "VariableRuntimeDxe"
   }
-
   INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
+
   # INF NetworkPkg/ArpDxe/ArpDxe.inf
   # INF NetworkPkg/Dhcp4Dxe/Dhcp4Dxe.inf
   # INF NetworkPkg/Dhcp6Dxe/Dhcp6Dxe.inf
@@ -198,8 +190,9 @@ READ_LOCK_STATUS   = TRUE
   # INF NetworkPkg/Udp6Dxe/Udp6Dxe.inf
   # INF NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf
   # INF NetworkPkg/VlanConfigDxe/VlanConfigDxe.inf
-  # INF SurfaceDuoFamilyPkg/Driver/ColorbarsDxe/ColorbarsDxe.inf
-  # INF SurfaceDuoFamilyPkg/UFP/ufpdevicefw.inf
+
+  INF SurfaceDuoFamilyPkg/Driver/ColorbarsDxe/ColorbarsDxe.inf
+  INF SurfaceDuoFamilyPkg/UFP/ufpdevicefw.inf
 
 [FV.FVMAIN_COMPACT]
 FvAlignment        = 8

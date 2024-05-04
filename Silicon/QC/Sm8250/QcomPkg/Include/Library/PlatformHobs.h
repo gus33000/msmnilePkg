@@ -90,4 +90,12 @@ typedef struct {
     }                                                                          \
   }
 
+#define EFI_QCOM_PRODMODE_INFO_GUID                                                 \
+  {                                                                            \
+    0xd5f8d706, 0xd602, 0x4f39,                                                \
+    {                                                                          \
+      0x96, 0x9d, 0xa0, 0x4f, 0xe2, 0xbb, 0x7f, 0x61                           \
+    }                                                                          \
+  }
+
 #endif /* _PLATFORM_HOBS_H_ */

@@ -37,7 +37,8 @@ VOID PlatformInitialize(VOID)
   // The UFS device is currently attached to the main IOMMU on Context Bank 1
   // (Previous firmware) But said configuration is non cache coherent compliant,
   // fix it.
-  ConfigureIOMMUContextBankCacheSetting(UFS_CTX_BANK, TRUE);
+  // ConfigureIOMMUContextBankCacheSetting(UFS_CTX_BANK, TRUE);
+  // TODO: Fix this!
 
   // Disable WatchDog Timer
   SetWatchdogState(FALSE);
