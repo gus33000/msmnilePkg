@@ -115,20 +115,15 @@ READ_LOCK_STATUS   = TRUE
 
   # ACPI Tables
   !include $(PACKAGE_NAME)/Include/ACPI.inc
-#  INF RuleOverride=ACPITABLE $(PACKAGE_NAME)/AcpiTables/AcpiTables.inf
-
-  # DT
-  INF EmbeddedPkg/Drivers/DtPlatformDxe/DtPlatformDxe.inf
-  !include $(PACKAGE_NAME)/Include/FDT.inc
 
   INF MdeModulePkg/Universal/EsrtFmpDxe/EsrtFmpDxe.inf
 
   !include SurfaceDuoFamilyPkg/Frontpage.fdf.inc
 
-#  FILE FREEFORM = PCD(gOemPkgTokenSpaceGuid.PcdLogoFile) {
-#    SECTION RAW = SurfaceDuoFamilyPkg/Include/Resources/BootLogo.bmp
-#    SECTION UI = "BootLogo.bmp"
-#  }
+  FILE FREEFORM = PCD(gOemPkgTokenSpaceGuid.PcdLogoFile) {
+    SECTION RAW = SurfaceDuoFamilyPkg/Include/Resources/BootLogo.bmp
+    SECTION UI = "BootLogo.bmp"
+  }
 
   FILE FREEFORM = PCD(gMsCorePkgTokenSpaceGuid.PcdRegulatoryGraphicFileGuid) {
     SECTION RAW = $(PACKAGE_NAME)/Include/Resources/RegulatoryLogos.png
@@ -197,7 +192,6 @@ READ_LOCK_STATUS   = TRUE
   # INF NetworkPkg/VlanConfigDxe/VlanConfigDxe.inf
 
   INF SurfaceDuoFamilyPkg/Driver/ColorbarsDxe/ColorbarsDxe.inf
-  INF SurfaceDuoFamilyPkg/Driver/SurfaceFirmwareProvisioningDataDxe/SurfaceFirmwareProvisioningDataDxe.inf
   INF SurfaceDuoFamilyPkg/UFP/ufpdevicefw.inf
 
 [FV.FVMAIN_COMPACT]

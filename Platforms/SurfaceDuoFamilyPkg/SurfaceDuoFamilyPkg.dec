@@ -3,6 +3,7 @@
   PACKAGE_NAME                   = SurfaceDuoFamilyPkg
   PACKAGE_GUID                   = 5fd522a5-b671-429f-957f-75113dd02434
   PACKAGE_VERSION                = 0.1
+
   DEFAULT_KEYS                   = TRUE
   PK_DEFAULT_FILE                = SurfaceDuoFamilyPkg/Include/Resources/SecureBoot/keystore/OEMA0-PK.der
   KEK_DEFAULT_FILE1              = SurfaceDuoFamilyPkg/Include/Resources/SecureBoot/keystore/Kek/MicCorKEKCA2011_2011-06-24.der
@@ -30,10 +31,8 @@
 
 [Guids.common]
   gSurfaceDuoFamilyPkgTokenSpaceGuid = { 0x4c59628e, 0x0a8a, 0x4099, { 0x8d, 0xe5, 0xf2, 0x08, 0xff, 0x80, 0xc4, 0xbe } }
-  gSwitchSlotsAppFileGuid =             { 0xD5BC0FB1, 0xA833, 0x4607, { 0xB7, 0xB6, 0x5E, 0xF9, 0xD1, 0x0B, 0xEE, 0xB7 } }
-  gLicenseConfigFileGuid =              { 0x5343A3C2, 0xB6DA, 0x8FF4, { 0xEF, 0x3A, 0x23, 0xFE, 0xF9, 0x94, 0x1C, 0x76 } }
+
   # From https://git.codelinaro.org/clo/la/abl/tianocore/edk2/-/tree/LA.UM.9.14.r1-20200.01-LAHAINA.QSSI12.0
-  # DisplayPowerStateProtocol header got from https://git.codelinaro.org/clo/la/abl/tianocore/edk2/-/blob/KERNEL.PLATFORM.2.0.r1-16800-kernel.0/QcomModulePkg/Include/Protocol/EFIDisplayPwr.h
   gQcomTokenSpaceGuid =                 { 0x882f8c2b, 0x9646, 0x435f, { 0x8d, 0xe5, 0xf2, 0x08, 0xff, 0x80, 0xc1, 0xbd } }
   gEfiPartitionTypeGuid =               { 0x6848de61, 0xeb61, 0x4def, { 0x9a, 0x8e, 0x38, 0x17, 0xcb, 0xeb, 0x8f, 0x1c } }
   gEfiEmmcUserPartitionGuid =           { 0xb615f1f5, 0x5088, 0x43cd, { 0x80, 0x9c, 0xa1, 0x6e, 0x52, 0x48, 0x7d, 0x00 } }
@@ -149,7 +148,7 @@
   gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdSmbiosSystemRetailModel|"1930"|VOID*|0x0000a304
   gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdSmbiosSystemRetailSku|"Surface_Duo_1930"|VOID*|0x0000a305
   gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdSmbiosBoardModel|"Surface Duo"|VOID*|0x0000a306
-  gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdSmbiosSystemBrand|"Microsoft"|VOID*|0x0000a307
+  gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdSmbiosSystemBrand|"Surface"|VOID*|0x0000a307
 
   # Simple FrameBuffer
   gSurfaceDuoFamilyPkgTokenSpaceGuid.PcdMipiFrameBufferWidth|1350|UINT32|0x0000a401

@@ -1,6 +1,5 @@
 #include <Library/BaseLib.h>
 #include <Library/PlatformMemoryMapLib.h>
-#include <Configuration/XblHlosHob.h>
 
 static ARM_MEMORY_REGION_DESCRIPTOR_EX gDeviceMemoryDescriptorEx[] = {
     /* Name               Address     Length      HobOption        ResourceAttribute    ArmAttributes

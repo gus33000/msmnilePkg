@@ -37,7 +37,6 @@
   SECURE_BOOT_ENABLE             = FALSE
   DEFAULT_KEYS                   = FALSE
 !endif
-
   USE_PHYSICAL_TIMER             = 0
   USE_SCREEN_FOR_SERIAL_OUTPUT   = 0
   USE_UART_FOR_SERIAL_OUTPUT     = 1
@@ -73,18 +72,14 @@
 
 [PcdsFixedAtBuild.common]
   # Platform-specific
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x200000000        # 8GB Size
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0x300000000        # 12GB Size
 
 [LibraryClasses.common]
   # Notice: PlatformMemoryMapLib was moved to Device/<device>/Library/
   PlatformMemoryMapLib|$(PACKAGE_NAME)/Device/$(TARGET_DEVICE)/Library/PlatformMemoryMapLib/PlatformMemoryMapLib.inf
-
 
 !include $(PACKAGE_NAME)/Device/$(TARGET_DEVICE)/DXE.dsc.inc
 !include QcomPkg/QcomPkg.dsc.inc
 !include $(PACKAGE_NAME)/Device/$(TARGET_DEVICE)/PcdsFixedAtBuild.dsc.inc
 !include SurfaceDuoFamilyPkg/SurfaceDuoFamily.dsc.inc
 !include SurfaceDuoFamilyPkg/Frontpage.dsc.inc
-
-#[Components.common]
-#  SurfaceDuo2Pkg/AcpiTables/AcpiTables.inf
