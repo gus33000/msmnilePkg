@@ -175,12 +175,12 @@ SMBIOS_TABLE_TYPE1 mSysInfoType1 = {
     6, // Family String
 };
 CHAR8 *mSysInfoType1Strings[] = {
-    "Qualcomm Incorporated",
-    "Not Specified",
+    "Qualcomm",
+    "MTP",
     "Not Specified",
     "Not Specified",
     "6",
-    "MTP",
+    "SDM855",
     NULL};
 
 /***********************************************************************
@@ -209,8 +209,8 @@ SMBIOS_TABLE_TYPE2 mBoardInfoType2 = {
     {0}                       // ContainedObjectHandles[1];
 };
 CHAR8 *mBoardInfoType2Strings[] = {
-    "Microsoft Corporation",
-    "Not Specified",
+    "Qualcomm",
+    "MTP",
     "Not Specified",
     "Not Specified",
     "Not Specified",
@@ -239,7 +239,7 @@ SMBIOS_TABLE_TYPE3 mEnclosureInfoType3 = {
     {{0}},                  // ContainedElements[1];
 };
 CHAR8 *mEnclosureInfoType3Strings[] = {
-    "Microsoft Corporation", "Not Specified", "Not Specified", "Not Specified",
+    "Qualcomm", "Not Specified", "Not Specified", "Not Specified",
     NULL};
 
 /***********************************************************************
@@ -761,25 +761,21 @@ VOID BIOSInfoUpdateSmbiosType0(VOID)
         SMBIOS data update  TYPE1  System Information
 ************************************************************************/
 
-VOID SysInfoUpdateSmbiosType1(CHAR8 *serialNo, EFIChipInfoSerialNumType serial)
+VOID SysInfoUpdateSmbiosType1(CHAR8 *serialNo, EFIChipInfoSerialNumType serial, CHAR8* chipIdString)
 {
   // Update string table before proceeds
+  mSysInfoType1Strings[0] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemBrand);
   mSysInfoType1Strings[1] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemModel);
   mSysInfoType1Strings[2] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailModel);
-  mSysInfoType1Strings[4] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailSku);
 
-//
-// PcdSmbiosSystemBrand modification Start
-//
-  mSysInfoType1Strings[0] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemBrand);
-//
-// PcdSmbiosSystemBrand modification End
-//
+  mSysInfoType1Strings[4] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemRetailSku);
 
   // Update serial number from Board DXE
   mSysInfoType1Strings[3] = serialNo;
-//  GetUUIDFromEFIChipInfoSerialNumType(
-//      serial, &mSysInfoType1.Uuid, sizeof(GUID));
+
+  // Update chip id string from Board DXE
+  mSysInfoType1Strings[5] = chipIdString;
+
   mSysInfoType1.Uuid.Data1 = serial;
 
   LogSmbiosData(
@@ -792,6 +788,7 @@ VOID SysInfoUpdateSmbiosType1(CHAR8 *serialNo, EFIChipInfoSerialNumType serial)
 VOID BoardInfoUpdateSmbiosType2(CHAR8 *serialNo)
 {
   // Update string table before proceeds
+  mBoardInfoType2Strings[0] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosSystemBrand);
   mBoardInfoType2Strings[1] = (CHAR8 *)FixedPcdGetPtr(PcdSmbiosBoardModel);
 
   // Update serial number from Board DXE
@@ -980,6 +977,7 @@ SmBiosTableDxeInitialize(
   EFI_STATUS               Status;
   CHAR8                    serialNo[EFICHIPINFO_MAX_ID_LENGTH];
 //  UINTN                    serialNoLength = EFICHIPINFO_MAX_ID_LENGTH;
+  CHAR8                    SIDS[EFICHIPINFO_MAX_ID_LENGTH] = {0};
   EFIChipInfoSerialNumType serial;
   EFI_CHIPINFO_PROTOCOL   *mBoardProtocol  = NULL;
 //  SFPD_PROTOCOL           *mDeviceProtocol = NULL;
@@ -991,8 +989,8 @@ SmBiosTableDxeInitialize(
   if (mBoardProtocol != NULL) {
     mBoardProtocol->GetSerialNumber(mBoardProtocol, &serial);
     AsciiSPrint(serialNo, sizeof(serialNo), "%lld", serial);
+    mBoardProtocol->GetChipIdString(mBoardProtocol, SIDS, EFICHIPINFO_MAX_ID_LENGTH);
   }
-
 //
 // Dynamic Ram Detect Patch Start
 //
@@ -1065,7 +1063,7 @@ SmBiosTableDxeInitialize(
 //
 
   BIOSInfoUpdateSmbiosType0();
-  SysInfoUpdateSmbiosType1(serialNo, serial);
+  SysInfoUpdateSmbiosType1(serialNo, serial, SIDS);
   BoardInfoUpdateSmbiosType2(serialNo);
   EnclosureInfoUpdateSmbiosType3(serialNo);
   ProcessorInfoUpdateSmbiosType4(PcdGet32(PcdCoreCount));
